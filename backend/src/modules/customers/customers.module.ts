@@ -13,5 +13,6 @@ import { CreateCustomerUseCase } from './application/use-cases/create-customer.u
     },
     CreateCustomerUseCase,
   ],
+  exports: ['CUSTOMER_REPOSITORY'],
 })
 export class CustomersModule {}
