@@ -14,4 +14,4 @@ import { CreateCustomerUseCase } from './application/use-cases/create-customer.u
     CreateCustomerUseCase,
   ],
 })
-export class CustomerModule {}
+export class CustomersModule {}
