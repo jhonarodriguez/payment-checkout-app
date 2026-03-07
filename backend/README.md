@@ -1,99 +1,103 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Payment Checkout App — Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST construida con **NestJS** para procesar pagos a través de la pasarela **Wompi**. Implementa Clean Architecture con separación en capas de dominio, aplicación e infraestructura.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Requisitos
 
-## Description
+- Node.js 18+
+- PostgreSQL 14+
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
+## Configuración
 
 ```bash
-$ npm install
+npm install
+cp .env.example .env  # completar las variables requeridas
 ```
 
-## Compile and run the project
+### Variables de entorno
+
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `DB_HOST` | Host de PostgreSQL | `localhost` |
+| `DB_PORT` | Puerto de PostgreSQL | `5432` |
+| `DB_USER` | Usuario de la base de datos | — |
+| `DB_PASS` | Contraseña de la base de datos | — |
+| `DB_NAME` | Nombre de la base de datos | `checkout_db` |
+| `PAYMENT_PUBLIC_KEY` | Llave pública de Wompi | — |
+| `PAYMENT_PRIVATE_KEY` | Llave privada de Wompi | — |
+| `PAYMENT_EVENTS_KEY` | Llave de eventos de Wompi | — |
+| `PAYMENT_INTEGRITY_KEY` | Llave de integridad de Wompi | — |
+| `PAYMENT_API_URL` | URL de la API de Wompi | `https://api-sandbox.co.uat.wompi.dev/v1` |
+| `PORT` | Puerto del servidor | `3001` |
+| `FRONTEND_URL` | Origen permitido por CORS | `http://localhost:5173` |
+| `BASE_FEE_IN_CENTS` | Comisión base en centavos | `300000` |
+| `DELIVERY_FEE_IN_CENTS` | Costo de envío en centavos | `200000` |
+
+## Ejecutar el proyecto
 
 ```bash
-# development
-$ npm run start
+# Desarrollo (watch mode)
+npm run start:dev
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+# Producción
+npm run build && npm run start:prod
 ```
 
-## Run tests
+La API queda disponible en `http://localhost:3001/api`.  
+Documentación Swagger: `http://localhost:3001/api/docs`.
+
+## Tests
 
 ```bash
-# unit tests
-$ npm run test
+# Todos los tests unitarios
+npm test
 
-# e2e tests
-$ npm run test:e2e
+# Un módulo específico
+npx jest --testPathPattern="products"
 
-# test coverage
-$ npm run test:cov
+# E2E
+npm run test:e2e
+
+# Con cobertura
+npm run test:cov
 ```
 
-## Deployment
+## Arquitectura
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Cada módulo (`products`, `customers`, `transactions`, `payments`, `deliveries`) sigue una estructura de tres capas:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g mau
-$ mau deploy
+```
+modules/<feature>/
+├── domain/
+│   ├── entities/       # Objetos de negocio puros
+│   └── ports/          # Interfaces (contratos)
+├── application/
+│   └── use-cases/      # Lógica de negocio, retornan Result<T, E>
+└── infrastructure/
+    ├── adapters/        # Entidades TypeORM + implementaciones de repositorios
+    ├── dto/             # DTOs con class-validator y @ApiProperty
+    └── *.controller.ts
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Flujo de pago
 
-## Resources
+`POST /api/transactions` ejecuta `ProcessPaymentUseCase`:
 
-Check out a few resources that may come in handy when working with NestJS:
+1. Valida el producto y stock disponible
+2. Busca o crea el cliente por email
+3. Calcula el total: `precio_producto + BASE_FEE + DELIVERY_FEE`
+4. Crea la transacción en estado `PENDING` con referencia `TXN-{timestamp}-{random}`
+5. Llama a `WompiAdapter` con hash de integridad SHA256
+6. Si es `APPROVED`: crea el registro de entrega y decrementa el stock
+7. Retorna el detalle de la transacción o el error correspondiente
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Endpoints
 
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET` | `/api/products` | Listar productos |
+| `GET` | `/api/products/:id` | Obtener producto por UUID |
+| `GET` | `/api/payments/acceptance-token` | Obtener token de aceptación de Wompi |
+| `POST` | `/api/transactions` | Procesar un pago |
+| `GET` | `/api/transactions/:id` | Obtener transacción por UUID |
+| `GET` | `/api/deliveries/transaction/:transactionId` | Obtener entrega de una transacción |
