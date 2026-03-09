@@ -1,0 +1,121 @@
+.page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding-top: var(--safe-top);
+}
+
+.headerInner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px;
+}
+
+.backButton {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-light);
+  border-radius: 50%;
+  font-size: 18px;
+  color: var(--text);
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.backButton:active {
+  background: var(--border);
+}
+
+.headerTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.steps {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.step {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--border);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s, color 0.3s;
+}
+
+.stepActive {
+  background: var(--primary);
+  color: white;
+}
+
+.stepLine {
+  width: 20px;
+  height: 2px;
+  background: var(--border);
+  transition: background 0.3s;
+}
+
+.stepLineActive {
+  background: var(--primary);
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 1024px) {
+  .headerInner {
+    padding: 14px 32px;
+  }
+
+  .content {
+    flex-direction: row;
+    align-items: flex-start;
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 40px 32px;
+    gap: 40px;
+  }
+
+  .main {
+    overflow-y: visible;
+    flex: 1;
+    min-width: 0;
+  }
+}

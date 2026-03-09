@@ -1,0 +1,135 @@
+.page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px;
+  padding-top: calc(24px + var(--safe-top));
+  padding-bottom: calc(24px + var(--safe-bottom));
+  background: var(--bg-light);
+}
+
+.card {
+  background: white;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 40px 24px;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  animation: scaleIn 0.4s ease;
+}
+
+@media (min-width: 640px) {
+  .card {
+    padding: 52px 48px;
+    max-width: 520px;
+    border-radius: 24px;
+  }
+}
+
+/* Compact on small-height phones (e.g. landscape) */
+@media (max-height: 680px) {
+  .card {
+    padding: 24px 16px;
+    gap: 12px;
+  }
+}
+
+.iconCircle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+  flex-shrink: 0;
+}
+
+.iconSuccess { background: var(--success-light); }
+.iconFailure { background: var(--error-light); }
+
+.icon {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.iconSuccess .icon { color: var(--success); }
+.iconFailure .icon { color: var(--error); }
+
+.title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 340px;
+}
+
+.details {
+  width: 100%;
+  background: var(--bg-light);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  font-size: 14px;
+}
+
+.detailLabel {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.detailValue {
+  font-weight: 600;
+  color: var(--text);
+  text-align: right;
+  word-break: break-word;
+}
+
+.totalValue {
+  color: var(--primary);
+  font-size: 16px;
+}
+
+.actionButton {
+  width: 100%;
+  padding: 15px;
+  background: var(--primary);
+  color: white;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 8px;
+  transition: background 0.2s, transform 0.1s;
+  min-height: 52px;
+}
+
+.actionButton:hover {
+  background: var(--primary-dark);
+}
+
+.actionButton:active {
+  transform: scale(0.98);
+}
