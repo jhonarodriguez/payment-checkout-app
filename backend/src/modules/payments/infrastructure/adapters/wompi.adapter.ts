@@ -99,8 +99,13 @@ export class WompiAdapter implements PaymentGatewayPort {
           },
         },
       );
+      console.log('🚀 ~ WompiAdapter ~ processPayment ~ response:', response);
 
       const transaction = response.data?.data;
+      console.log(
+        '🚀 ~ WompiAdapter ~ processPayment ~ transaction:',
+        transaction,
+      );
 
       if (!transaction) {
         return Result.fail(
@@ -115,10 +120,21 @@ export class WompiAdapter implements PaymentGatewayPort {
       });
     } catch (error) {
       if (error instanceof AxiosError) {
-        const errorMessage =
-          error.response?.data?.error?.messages?.join(', ') ||
-          error.response?.data?.error?.type ||
-          'Error al procesar el pago';
+        const wompiError = error.response?.data?.error;
+        const messages = wompiError?.messages;
+
+        let errorMessage = 'Error al procesar el pago';
+
+        if (messages) {
+          errorMessage =
+            typeof messages === 'string'
+              ? messages
+              : Array.isArray(messages)
+                ? messages.join(', ')
+                : Object.values(messages).flat().join(', ');
+        } else if (wompiError?.type) {
+          errorMessage = wompiError.type;
+        }
 
         return Result.fail(new Error(errorMessage));
       }

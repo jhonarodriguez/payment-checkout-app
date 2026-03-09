@@ -32,7 +32,7 @@ export async function seedProducts(dataSource: DataSource): Promise<void> {
         'Ideal para programadores y gamers.',
       priceInCents: 25000000,
       imageUrl:
-        'https://images.unsplash.com/photo-1563191911-e65a18b5d8b7?w=400',
+        'https://jyrtechnology.com.co/wp-content/uploads/2020/07/MKF30S-3.jpg',
       stock: 5,
     },
     {

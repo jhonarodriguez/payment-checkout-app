@@ -54,7 +54,9 @@ export class ProcessPaymentUseCase {
     const customer = customerResult.value;
 
     const totalInCents =
-      product.priceInCents + this.baseFeeInCents + this.deliveryFeeInCents;
+      Number(product.priceInCents) +
+      Number(this.baseFeeInCents) +
+      Number(this.deliveryFeeInCents);
 
     const transactionResult = await this.createPendingTransaction({
       customerId: customer.id,
@@ -64,10 +66,17 @@ export class ProcessPaymentUseCase {
       deliveryFeeInCents: this.deliveryFeeInCents,
       totalInCents,
       cardLastFour: dto.cardLastFour,
+      deliveryAddress: dto.deliveryAddress,
+      deliveryCity: dto.deliveryCity,
+      deliveryDepartment: dto.deliveryDepartment,
     });
     if (transactionResult.isFailure) return transactionResult;
 
     const transaction = transactionResult.value;
+    console.log(
+      '🚀 ~ ProcessPaymentUseCase ~ execute ~ transaction:',
+      transaction,
+    );
 
     const paymentResult = await this.paymentGateway.processPayment({
       reference: transaction.reference,
@@ -77,46 +86,38 @@ export class ProcessPaymentUseCase {
       customerEmail: dto.customerEmail,
     });
 
-    if (paymentResult.isFailure || paymentResult.value.status !== 'APPROVED') {
-      const failStatus = paymentResult.isFailure
-        ? TransactionStatus.ERROR
-        : TransactionStatus.DECLINED;
-
+    if (paymentResult.isFailure) {
       await this.transactionRepo.updateStatus(
         transaction.id,
-        failStatus,
-        paymentResult.isFailure ? null : paymentResult.value.gatewayId,
+        TransactionStatus.ERROR,
+        null,
       );
-
       return Result.fail(
-        new Error(
-          paymentResult.isFailure
-            ? 'Error al procesar el pago'
-            : `Pago rechazado: ${paymentResult.value.statusMessage}`,
-        ),
+        new Error('Error al conectar con la pasarela de pago'),
       );
     }
 
     await this.transactionRepo.updateStatus(
       transaction.id,
-      TransactionStatus.APPROVED,
+      paymentResult.value.status as TransactionStatus,
       paymentResult.value.gatewayId,
     );
 
-    await this.deliveryRepo.create({
-      transactionId: transaction.id,
-      customerId: customer.id,
-      address: dto.deliveryAddress,
-      city: dto.deliveryCity,
-      department: dto.deliveryDepartment,
-    });
-
-    await this.productRepo.decrementStock(product.id);
+    if (paymentResult.value.status === 'APPROVED') {
+      await this.deliveryRepo.create({
+        transactionId: transaction.id,
+        customerId: customer.id,
+        address: dto.deliveryAddress,
+        city: dto.deliveryCity,
+        department: dto.deliveryDepartment,
+      });
+      await this.productRepo.decrementStock(product.id);
+    }
 
     return Result.ok({
       transactionId: transaction.id,
       reference: transaction.reference,
-      status: TransactionStatus.APPROVED,
+      status: paymentResult.value.status,
       totalInCents,
       product: {
         id: product.id,

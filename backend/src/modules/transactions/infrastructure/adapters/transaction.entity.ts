@@ -77,6 +77,15 @@ export class TransactionEntity {
   })
   cardLastFour: string | null;
 
+  @Column({ type: 'varchar', length: 500, name: 'delivery_address' })
+  deliveryAddress: string;
+
+  @Column({ type: 'varchar', length: 255, name: 'delivery_city' })
+  deliveryCity: string;
+
+  @Column({ type: 'varchar', length: 255, name: 'delivery_department' })
+  deliveryDepartment: string;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
