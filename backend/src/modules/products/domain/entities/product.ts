@@ -17,6 +17,7 @@ export class Product {
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP',
+      currencyDisplay: 'code',
       minimumFractionDigits: 0,
     }).format(this.priceInCents / 100);
   }

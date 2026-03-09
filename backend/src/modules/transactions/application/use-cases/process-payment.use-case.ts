@@ -73,10 +73,6 @@ export class ProcessPaymentUseCase {
     if (transactionResult.isFailure) return transactionResult;
 
     const transaction = transactionResult.value;
-    console.log(
-      '🚀 ~ ProcessPaymentUseCase ~ execute ~ transaction:',
-      transaction,
-    );
 
     const paymentResult = await this.paymentGateway.processPayment({
       reference: transaction.reference,

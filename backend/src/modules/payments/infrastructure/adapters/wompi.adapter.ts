@@ -99,13 +99,8 @@ export class WompiAdapter implements PaymentGatewayPort {
           },
         },
       );
-      console.log('🚀 ~ WompiAdapter ~ processPayment ~ response:', response);
 
       const transaction = response.data?.data;
-      console.log(
-        '🚀 ~ WompiAdapter ~ processPayment ~ transaction:',
-        transaction,
-      );
 
       if (!transaction) {
         return Result.fail(
