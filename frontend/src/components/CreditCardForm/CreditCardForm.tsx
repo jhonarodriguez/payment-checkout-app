@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/incompatible-library */
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useAppDispatch } from '../../store';
+import { useAppDispatch, useAppSelector } from '../../store';
 import { setCardData, setDeliveryData, goToSummary } from '../../store/slices/checkoutSlice';
 import {
   detectCardBrand,
@@ -30,10 +31,24 @@ interface FormValues {
   department: string;
 }
 
+const FORM_DRAFT_KEY = 'checkout_form_draft';
+
+const loadFormDraft = (): Partial<FormValues> => {
+  try {
+    const saved = localStorage.getItem(FORM_DRAFT_KEY);
+    return saved ? JSON.parse(saved) : {};
+  } catch {
+    return {};
+  }
+};
+
 export function CreditCardForm() {
   const dispatch = useAppDispatch();
-  
+  const { deliveryData } = useAppSelector((state) => state.checkout);
+
   const [cardBrand, setCardBrand] = useState<CardBrand>('unknown');
+
+  const draft = loadFormDraft();
 
   const {
     register,
@@ -43,9 +58,29 @@ export function CreditCardForm() {
     setValue,
   } = useForm<FormValues>({
     mode: 'onBlur',
+    defaultValues: {
+      fullName:    deliveryData?.fullName    ?? draft.fullName    ?? '',
+      email:       deliveryData?.email       ?? draft.email       ?? '',
+      phone:       deliveryData?.phone       ?? draft.phone       ?? '',
+      address:     deliveryData?.address     ?? draft.address     ?? '',
+      city:        deliveryData?.city        ?? draft.city        ?? '',
+      department:  deliveryData?.department  ?? draft.department  ?? '',
+    },
   });
-  
-  // eslint-disable-next-line react-hooks/incompatible-library
+   
+  const [fullName, email, phone, address, city, department] = watch([
+    'fullName', 'email', 'phone', 'address', 'city', 'department',
+  ]);
+  useEffect(() => {
+    try {
+      localStorage.setItem(FORM_DRAFT_KEY, JSON.stringify({
+        fullName, email, phone, address, city, department,
+      }));
+    } catch { /* ignore quota/incognito errors */ }
+   
+  }, [fullName, email, phone, address, city, department]);
+
+   
   const cardNumberValue = watch('cardNumber');
   useEffect(() => {
     if (cardNumberValue) {
@@ -94,6 +129,7 @@ export function CreditCardForm() {
     );
     
     dispatch(goToSummary());
+    localStorage.removeItem(FORM_DRAFT_KEY);
   };
 
   return (

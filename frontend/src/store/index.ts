@@ -15,6 +15,7 @@ const localStorageMiddleware =
     const toPersist = {
       currentStep: state.checkout.currentStep,
       selectedProductId: state.checkout.selectedProductId,
+      deliveryData: state.checkout.deliveryData,
       transactionId: state.checkout.transactionId,
       transactionResult: state.checkout.transactionResult,
     };

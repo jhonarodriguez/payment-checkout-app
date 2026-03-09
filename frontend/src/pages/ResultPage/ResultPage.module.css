@@ -1,24 +1,44 @@
 .page {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px 20px;
+  padding-top: calc(24px + var(--safe-top));
+  padding-bottom: calc(24px + var(--safe-bottom));
   background: var(--bg-light);
-  animation: fadeIn 0.4s ease;
 }
 
 .card {
   background: white;
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-lg);
-  padding: 36px 24px;
+  padding: 40px 24px;
   width: 100%;
+  max-width: 480px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
   text-align: center;
+  animation: scaleIn 0.4s ease;
+}
+
+@media (min-width: 640px) {
+  .card {
+    padding: 52px 48px;
+    max-width: 520px;
+    border-radius: 24px;
+  }
+}
+
+/* Compact on small-height phones (e.g. landscape) */
+@media (max-height: 680px) {
+  .card {
+    padding: 24px 16px;
+    gap: 12px;
+  }
 }
 
 .iconCircle {
@@ -29,6 +49,7 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 4px;
+  flex-shrink: 0;
 }
 
 .iconSuccess { background: var(--success-light); }
@@ -43,16 +64,17 @@
 .iconFailure .icon { color: var(--error); }
 
 .title {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 800;
   color: var(--text);
+  line-height: 1.2;
 }
 
 .subtitle {
   font-size: 15px;
   color: var(--text-secondary);
-  line-height: 1.5;
-  max-width: 300px;
+  line-height: 1.6;
+  max-width: 340px;
 }
 
 .details {
@@ -101,6 +123,7 @@
   font-weight: 700;
   margin-top: 8px;
   transition: background 0.2s, transform 0.1s;
+  min-height: 52px;
 }
 
 .actionButton:hover {

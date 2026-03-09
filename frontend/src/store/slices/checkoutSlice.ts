@@ -28,10 +28,11 @@ const loadPersistedState = (): Partial<CheckoutState> => {
       parsed.selectedProductId
     ) {
       return {
-        currentStep: parsed.currentStep,
+        currentStep: parsed.currentStep === 3 ? 2 : parsed.currentStep,
         selectedProductId: parsed.selectedProductId,
+        deliveryData: parsed.deliveryData || null,
         transactionId: parsed.transactionId || null,
-        transactionResult: parsed.transactionResult || null
+        transactionResult: parsed.transactionResult || null,
       };
     }
 
@@ -124,6 +125,7 @@ const checkoutSlice = createSlice({
     
     resetCheckout: () => {
       localStorage.removeItem('checkout_progress');
+      localStorage.removeItem('checkout_form_draft');
       return { ...INITIAL_STATE };
     },
   },

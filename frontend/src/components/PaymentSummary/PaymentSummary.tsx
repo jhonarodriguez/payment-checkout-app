@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAppSelector, useAppDispatch } from '../../store';
 import {
   startProcessing,
@@ -19,9 +20,9 @@ export function PaymentSummary() {
   const { cardData, deliveryData, selectedProductId, isProcessing } =
     useAppSelector((state) => state.checkout);
   const products = useAppSelector((state) => state.products.items);
-  
+
   const product = products.find((p) => p.id === selectedProductId);
-  
+
   if (!product || !cardData || !deliveryData) return null;
 
   const totalInCents =
@@ -52,7 +53,7 @@ export function PaymentSummary() {
         );
         return;
       }
-      
+
       let acceptanceToken: string;
       try {
         acceptanceToken = await paymentService.getAcceptanceToken();
@@ -64,23 +65,46 @@ export function PaymentSummary() {
         );
         return;
       }
-      
-      const result = await paymentService.processPayment({
-        productId: product.id,
-        customerName: deliveryData.fullName,
-        customerEmail: deliveryData.email,
-        deliveryAddress: deliveryData.address,
-        deliveryCity: deliveryData.city,
-        deliveryDepartment: deliveryData.department,
-        cardToken,
-        acceptanceToken,
-        cardLastFour: cardData.lastFour,
-      });
-      
-      dispatch(decrementProductStock(product.id));
-      
-      dispatch(paymentSuccess(result));
 
+      let transactionData: any;
+      try {
+        transactionData = await paymentService.processPayment({
+          productId: product.id,
+          customerName: deliveryData.fullName,
+          customerEmail: deliveryData.email,
+          deliveryAddress: deliveryData.address,
+          deliveryCity: deliveryData.city,
+          deliveryDepartment: deliveryData.department,
+          cardToken,
+          acceptanceToken,
+          cardLastFour: cardData.lastFour,
+        });
+      } catch (err: any) {
+        dispatch(paymentFailed(err.message || 'Error al procesar el pago'));
+        return;
+      }
+
+      const finalStatus = await paymentService.pollTransactionStatus(
+        transactionData.transactionId,
+      );
+
+      if (finalStatus === 'APPROVED') {
+        dispatch(decrementProductStock(product.id));
+        dispatch(
+          paymentSuccess({
+            ...transactionData,
+            status: 'APPROVED',
+          }),
+        );
+      } else {
+        dispatch(
+          paymentFailed(
+            finalStatus === 'DECLINED'
+              ? 'La transacción fue rechazada por el banco'
+              : 'La transacción no pudo completarse',
+          ),
+        );
+      }
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error
@@ -99,11 +123,11 @@ export function PaymentSummary() {
   return (
     <div className={styles.overlay} role="dialog" aria-modal="true" aria-label="Resumen del pago">
       <div className={styles.panel}>
-        
+
         <div className={styles.handle} />
 
         <h2 className={styles.title}>Resumen del Pedido</h2>
-        
+
         <div className={styles.priceBreakdown}>
           <div className={styles.priceRow}>
             <span className={styles.priceLabel}>{product.name}</span>
@@ -131,7 +155,7 @@ export function PaymentSummary() {
             <span>{formatCurrency(totalInCents)}</span>
           </div>
         </div>
-        
+
         <div className={styles.infoRow}>
           <span className={styles.infoIcon}>💳</span>
           <span>
@@ -139,14 +163,14 @@ export function PaymentSummary() {
             {' '}**** {cardData.lastFour}
           </span>
         </div>
-        
+
         <div className={styles.infoRow}>
           <span className={styles.infoIcon}>📦</span>
           <span>
             {deliveryData.address}, {deliveryData.city}
           </span>
         </div>
-        
+
         <button
           className={styles.confirmButton}
           onClick={handleConfirmPayment}
