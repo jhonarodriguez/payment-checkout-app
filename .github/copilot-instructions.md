@@ -8,7 +8,7 @@ Full-stack payment checkout application integrating with the **Wompi** payment g
 
 ## Build, Test & Lint Commands
 
-Working directory: `payment-checkout-app/backend`
+### Backend — `payment-checkout-app/backend`
 
 ```bash
 # Development
@@ -19,15 +19,24 @@ npm run start:prod      # Production (from dist/)
 npm run build
 
 # Tests
-npm test                        # All unit tests (spec files in src/)
-npm run test:watch              # Watch mode
-npm run test:cov                # With coverage
-npm run test:e2e                # E2E (test/app.e2e-spec.ts)
-npx jest --testPathPattern="products"  # Run a single test file by name
+npm test                                      # All unit tests (spec files in src/)
+npm run test:watch                            # Watch mode
+npm run test:cov                              # With coverage
+npm run test:e2e                              # E2E (test/app.e2e-spec.ts)
+npx jest --testPathPattern="products"         # Run a single test file by name
 
 # Lint / Format
 npm run lint            # ESLint with --fix
 npm run format          # Prettier
+```
+
+### Frontend — `payment-checkout-app/frontend`
+
+```bash
+npm run dev       # Dev server with HMR (http://localhost:5173)
+npm run build     # TypeScript check + Vite production build → dist/
+npm run preview   # Preview the production build locally
+npm run lint      # ESLint check (no auto-fix)
 ```
 
 ---
@@ -154,6 +163,33 @@ Base URL: `http://localhost:3001/api` | Swagger: `http://localhost:3001/api/docs
 | POST | `/transactions` | Process a payment end-to-end |
 | GET | `/transactions/:id` | Get transaction by UUID |
 | GET | `/deliveries/transaction/:transactionId` | Get delivery for a transaction |
+
+---
+
+## Frontend Architecture
+
+Stack: **React 19 + Vite + TypeScript + Redux Toolkit + React Router + React Hook Form + Axios**.
+
+```
+frontend/src/
+├── pages/          # ProductPage → CheckoutPage → ResultPage (4-step flow)
+├── components/     # CreditCardForm, PaymentSummary
+├── store/slices/   # productSlice, checkoutSlice, transactionSlice
+├── services/       # api.ts (Axios instance), payment.service.ts, product.service.ts
+├── utils/          # card.utils.ts (formatting, brand detection)
+└── types/          # Shared TypeScript interfaces
+```
+
+The checkout progresses through `checkoutSlice.currentStep` (1–5). Checkout state is persisted to `localStorage` under the key `checkout_progress` via a custom Redux middleware.
+
+### Wompi Card Tokenization
+
+Raw card data is **never sent to the backend**. The frontend tokenizes directly with Wompi before calling the backend:
+
+1. `GET /payments/acceptance-token` → backend proxies Wompi's `GET /merchants/{publicKey}` and returns `acceptanceToken`.
+2. Frontend POSTs card data directly to Wompi `POST /tokens/cards` → receives `cardToken`.
+3. Frontend posts `cardToken` + `acceptanceToken` + delivery info to `POST /api/transactions`.
+4. Frontend polls `GET /api/transactions/:id` (up to 12 times, 2.5 s intervals) until status resolves from PENDING.
 
 ---
 
