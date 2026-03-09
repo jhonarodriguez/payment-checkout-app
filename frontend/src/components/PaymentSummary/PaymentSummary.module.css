@@ -1,0 +1,162 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+}
+
+.panel {
+  background: white;
+  border-radius: 24px 24px 0 0;
+  padding: 12px 20px 36px;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  animation: slideUp 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.handle {
+  width: 40px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 0 auto 20px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+.priceBreakdown {
+  background: var(--bg-light);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.priceLabel {
+  flex: 1;
+  margin-right: 8px;
+}
+
+.priceValue {
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.totalRow {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  margin-top: 4px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.infoIcon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.confirmButton {
+  width: 100%;
+  padding: 16px;
+  background: var(--primary);
+  color: white;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.confirmButton:hover:not(:disabled) {
+  background: var(--primary-dark);
+}
+
+.confirmButton:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.confirmButton:disabled {
+  background: #a0a0a0;
+  cursor: not-allowed;
+}
+
+.backButton {
+  width: 100%;
+  padding: 13px;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  margin-top: 10px;
+  transition: background 0.2s;
+}
+
+.backButton:hover:not(:disabled) {
+  background: var(--bg-light);
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+.secureNote {
+  text-align: center;
+  font-size: 12px;
+  color: #999;
+  margin-top: 16px;
+  line-height: 1.4;
+}
+
+@media (min-width: 640px) {
+  .overlay {
+    align-items: center;
+    padding: 20px;
+  }
+
+  .panel {
+    border-radius: 24px;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+}
