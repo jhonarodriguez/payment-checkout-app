@@ -76,6 +76,25 @@ Al iniciar el backend, se insertan automáticamente 3 productos si la tabla est�
 | Teclado Mecánico RGB | $250.000 COP |
 | Mouse Inalámbrico Ergonómico | $80.000 COP |
 
+## Tests y cobertura
+
+El backend cuenta con **125 tests unitarios** distribuidos en **20 suites**, con cobertura de ~99% sobre el código de negocio.
+
+```
+npm run test:cov --prefix backend
+```
+
+| Métrica    | Global  |
+|------------|---------|
+| Statements | 98.86 % |
+| Branches   | 98.80 % |
+| Functions  | 92.53 % |
+| Lines      | 98.74 % |
+
+> El reporte HTML detallado se genera en `backend/coverage/lcov-report/index.html`.
+
+![Coverage report](docs/coverage.png)
+
 ## Documentación
 
 - Swagger UI: `http://localhost:3001/api/docs`
