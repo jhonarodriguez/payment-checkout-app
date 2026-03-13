@@ -1,6 +1,8 @@
 {
-  "routes": [
-    { "src": "/", "dest": "/" },
-    { "src": "/checkout", "dest": "/" }
-  ]
+    "rewrites": [
+        {
+            "source": "/:path*",
+            "destination": "/index.html"
+        }
+    ]
 }
