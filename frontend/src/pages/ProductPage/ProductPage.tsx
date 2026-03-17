@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { fetchProducts } from '../../store/slices/productSlice';
 import { selectProduct } from '../../store/slices/checkoutSlice';
+import { ProductCard } from '../../components/ProductCard/ProductCard';
 import styles from './ProductPage.module.css';
 
 export function ProductPage() {
@@ -59,48 +60,11 @@ export function ProductPage() {
           </div>
         ) : (
           items.map((product) => (
-            <article key={product.id} className={styles.productCard}>
-              <div className={styles.imageWrapper}>
-                <img
-                  src={product.imageUrl}
-                  alt={product.name}
-                  className={styles.productImage}
-                  loading="lazy"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src =
-                      `https://www.shutterstock.com/image-vector/default-ui-image-placeholder-wireframes-600nw-1037719192.jpg`;
-                  }}
-                />
-                <span
-                  className={`${styles.stockBadge} ${
-                    product.hasStock ? styles.badgeInStock : styles.badgeOutOfStock
-                  }`}
-                >
-                  {product.hasStock
-                    ? `${product.stockUnits} en stock`
-                    : 'Agotado'}
-                </span>
-              </div>
-              
-              <div className={styles.productBody}>
-                <h2 className={styles.productName}>{product.name}</h2>
-                <p className={styles.productDescription}>{product.description}</p>
-
-                <div className={styles.productFooter}>
-                  <p className={styles.productPrice}>{product.formattedPrice}</p>
-
-                  <button
-                    className={styles.buyButton}
-                    onClick={() => handleBuyClick(product.id)}
-                    disabled={!product.hasStock}
-                    aria-label={`Comprar ${product.name}`}
-                  >
-                    {product.hasStock ? '💳 Pagar con tarjeta' : 'Sin stock'}
-                  </button>
-                </div>
-              </div>
-
-            </article>
+            <ProductCard
+              key={product.id}
+              product={product}
+              onBuy={handleBuyClick}
+            />
           ))
         )}
       </main>
